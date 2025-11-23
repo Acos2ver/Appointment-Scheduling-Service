@@ -65,7 +65,7 @@ def book_appointment():
 
     # Basic validation
     if not all([customer_id, resource_id, date, time]):
-        return jsonify({"error": : "Missing required fields (customer_id, resource_id, date, time)"}), 400
+        return jsonify({"error": "Missing required fields (customer_id, resource_id, date, time)"}), 400
 
     # Optimistic locking: check if slot is already booked
     existing = appointments_col.find_one({
@@ -181,3 +181,4 @@ def get_appointment(appointment_id):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5006"))
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)
+

@@ -5,6 +5,9 @@ import requests
 from bson import ObjectId
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 allowed_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5000").split(",")
@@ -145,9 +148,14 @@ def confirm_appointment():
 
     try:
         response = requests.post(email_service_url, json=email_payload, timeout=5)
-        response.raise_for_status()
-        notification_status = "sent"
-    except Exception:
+        print("[EMAIL DEBUG]", response.status_code, response.text, flush=True)
+
+        if 200 <= response.status_code < 300:
+            notification_status = "sent"
+        else:
+            notification_status = "failed"
+    except requests.RequestException as e:
+        print("[EMAIL ERROR]", repr(e), flush=True)
         notification_status = "failed"
 
     return jsonify({
@@ -181,5 +189,6 @@ def get_appointment(appointment_id):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5006"))
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)
+
 
 
